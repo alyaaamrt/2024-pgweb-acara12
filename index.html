@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Peta Interaktif Kabupaten Pati</title>
+
+    <!-- Mengimpor stylesheet Font Awesome untuk ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Mengimpor stylesheet Bootstrap untuk tata letak dan komponen responsif -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <!-- Mengimpor stylesheet Leaflet untuk peta interaktif -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <!-- Mengimpor stylesheet untuk plugin pencarian di Leaflet -->
+    <link rel="stylesheet" href="plugin/leaflet-search-master/leaflet-search-master/dist/leaflet-search.min.css">
+
+    <!-- Mengimpor stylesheet untuk plugin default extent di Leaflet -->
+    <link rel="stylesheet"
+        href="plugin/Leaflet.defaultextent-master/Leaflet.defaultextent-master/dist/leaflet.defaultextent.css">
+
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        #map {
+            width: 100%;
+            height: calc(100vh - 56px);
+        }
+
+
+        /* Gaya untuk kontainer legenda */
+        .legend {
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            width: 200px;
+            /* Lebar legenda */
+            max-height: 200px;
+            /* Batasi tinggi jika diperlukan */
+            overflow-y: auto;
+            /* Tambahkan scroll jika konten lebih tinggi dari container */
+            position: absolute;
+            /* Posisi absolut agar bisa diatur */
+            top: 50%;
+            /* Posisi vertikal di tengah */
+            left: 5px;
+            /* Menempatkan di kiri dengan jarak dari tepi */
+            transform: translateY(-270%);
+            /* Menggeser sedikit ke atas agar benar-benar tengah */
+        }
+
+        .legend h4 {
+            font-size: 16px;
+            /* Atur ukuran teks judul legenda */
+            font-family: 'Times New Roman', Times, serif;
+            /* Mengatur font ke Times New Roman */
+            font-weight: bold;
+            /* Membuat teks menjadi tebal */
+            margin: 0;
+            /* Atur margin agar lebih rapat */
+            text-align: center;
+            /* Pusatkan teks judul */
+        }
+
+
+        .legend img {
+            width: 90%;
+            margin: 5px;
+        }
+
+        .legend-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: space-between;
+        }
+
+        .legend-item {
+            width: 60%;
+            text-align: center;
+        }
+
+        /* Gaya untuk kontainer legenda */
+        .legend2 {
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            width: 200px;
+            /* Lebar legenda */
+            max-height: 130px;
+            /* Batasi tinggi jika diperlukan */
+            overflow-y: auto;
+            /* Tambahkan scroll jika konten lebih tinggi dari container */
+            position: absolute;
+            /* Posisi absolut agar bisa diatur */
+            top: 50%;
+            /* Posisi vertikal di tengah */
+            left: 5px;
+            /* Menempatkan di kiri dengan jarak dari tepi */
+            transform: translateY(-250%);
+            /* Menggeser sedikit ke atas agar benar-benar tengah */
+        }
+
+        .legend2 h4 {
+            font-size: 16px;
+            /* Atur ukuran teks judul legenda */
+            font-family: 'Times New Roman', Times, serif;
+            /* Mengatur font ke Times New Roman */
+            font-weight: bold;
+            /* Membuat teks menjadi tebal */
+            margin: 0;
+            /* Atur margin agar lebih rapat */
+            text-align: center;
+            /* Pusatkan teks judul */
+        }
+
+
+        .legend2 img {
+            width: 90%;
+            margin: 5px;
+        }
+
+        .legend2-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: space-between;
+        }
+
+        .legend2-item {
+            width: 60%;
+            text-align: center;
+        }
+
+        /* Gaya untuk kontainer legenda */
+        .legend3 {
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            width: 200px;
+            /* Lebar legenda */
+            max-height: 300px;
+            /* Batasi tinggi jika diperlukan */
+            overflow-y: auto;
+            /* Tambahkan scroll jika konten lebih tinggi dari container */
+            position: absolute;
+            /* Posisi absolut agar bisa diatur */
+            top: 50%;
+            /* Posisi vertikal di tengah */
+            left: 5px;
+            /* Menempatkan di kiri dengan jarak dari tepi */
+            transform: translateY(-220%);
+            /* Menggeser sedikit ke atas agar benar-benar tengah */
+        }
+
+        .legend3 h4 {
+            font-size: 16px;
+            /* Atur ukuran teks judul legenda */
+            font-family: 'Times New Roman', Times, serif;
+            /* Mengatur font ke Times New Roman */
+            font-weight: bold;
+            /* Membuat teks menjadi tebal */
+            margin: 0;
+            /* Atur margin agar lebih rapat */
+            text-align: center;
+            /* Pusatkan teks judul */
+        }
+
+
+        .legend3 img {
+            width: 30%;
+            margin: 5px;
+        }
+
+        .legend3-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: space-between;
+        }
+
+        .legend3-item {
+            width: 60%;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><i class="fa-solid fa-map-location-dot"></i> Kabupaten Pati</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://geoportal.patikab.go.id/" target="_blank"><i
+                                class="fa-solid fa-layer-group"></i> Sumber Data</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#infoModal"><i
+                                class="fa-solid fa-circle-info"></i> Info</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="map"></div>
+
+
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="infoModalLabel">Info Pembuat</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped table-bordered">
+                        <tr>
+                            <th>Nama</th>
+                            <td>Allya Miranti</td>
+                        </tr>
+                        <tr>
+                            <th>NIM</th>
+                            <td>23/521994/SV/23560</td>
+                        </tr>
+                        <tr>
+                            <th>Kelas</th>
+                            <td>B</td>
+                        </tr>
+                        <tr>
+                            <th>Github</th>
+                            <td><a href="https://github.com/alyaaamrt" target="_blank">https://github.com/alyaaamrt</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="lib/L.Geoserver.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="plugin/leaflet-search-master/leaflet-search-master/dist/leaflet-search.min.js"></script>
+    <script
+        src="plugin/Leaflet.defaultextent-master/Leaflet.defaultextent-master/dist/leaflet.defaultextent.js"></script>
+
+    <script>
+        // Inisialisasi peta
+        var map = L.map("map").setView([-6.7519, 111.0385], 10); // Set view ke Kabupaten Pati
+
+        // Tile Layer Base Map
+        var basemap = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution:
+                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        });
+
+        basemap.addTo(map);
+
+        var googleSat = L.tileLayer(
+            "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", {
+            attribution: '&copy; <a href="https://www.google.com/maps">Google Maps</a>',
+            maxZoom: 20
+        });
+
+
+
+        // Menambahkan WMS dari GeoServer lokal untuk ADMINISTRASIDESA_AR_25K
+        var wmsLayer = L.tileLayer.wms("http://localhost:8080/geoserver/ows?", {
+            layers: "pgweb_10:ADMINISTRASIDESA_AR_25K", // Layer ADMINISTRASIDESA_AR_25K
+            format: "image/png",
+            transparent: true,
+            attribution: "GeoServer Local",
+        });
+
+        wmsLayer.addTo(map);
+
+        // Menambahkan WMS dari GeoServer lokal untuk Jalan Pati
+        var wmsLayer2 = L.tileLayer.wms("http://localhost:8080/geoserver/ows?", {
+            layers: "pgweb_10:JALAN_LN_25K", // Layer Jalan Pati
+            format: "image/png",
+            transparent: true,
+            attribution: "GeoServer Local",
+        });
+
+        wmsLayer2.addTo(map);
+
+        // Menambahkan WMS dari GeoServer lokal untuk Fasilitas Kesehatan Pati
+        var wmsLayer3 = L.tileLayer.wms("http://localhost:8080/geoserver/ows?", {
+            layers: "pgweb_10:KESEHATAN_PT_25K", // Layer Fasilitas Kesehatan Pati
+            format: "image/png",
+            transparent: true,
+            attribution: "GeoServer Local",
+        });
+
+        wmsLayer3.addTo(map);
+
+        // Menambahkan kontrol layer
+        var baseMaps = {
+            "Open StreetMap": basemap,
+            "Google Satellite": googleSat
+        };
+
+        var overlayMaps = {
+            "Administrasi Desa": wmsLayer,
+            "Fasilitas Kesehatan": wmsLayer3,
+            "Jalan": wmsLayer2,
+        };
+
+
+        L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+        // Back to default extent
+        L.control.defaultExtent().addTo(map);
+
+
+        //Membuat watermark
+
+        L.Control.Watermark = L.Control.extend({
+            onAdd: function (map) {
+                var img = L.DomUtil.create('img');
+                img.src = 'icon/logo.png'; // Pastikan path-nya benar
+                img.style.width = '150px'; // Coba ubah ukuran gambar jika perlu
+                img.style.position = 'absolute'; // Menambahkan posisi absolut jika perlu
+                img.style.bottom = '10px'; // Sesuaikan posisi
+                img.style.left = '10px'; // Sesuaikan posisi
+                return img;
+            },
+
+            onRemove: function (map) {
+                // Nothing to do here
+            }
+        });
+
+        L.control.watermark = function (opts) {
+            return new L.Control.Watermark(opts);
+        }
+
+        L.control.watermark({ position: 'bottomleft' }).addTo(map);
+
+        // Menambahkan kontrol legenda ke peta
+        var legend = L.control({ position: "bottomleft" });
+
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create("div", "legend");
+
+            // Membuat kontainer untuk dua kolom
+            var container = '<div class="legend-container">' +
+                '<div class="legend-item"><img src="http://localhost:8080/geoserver/pgweb_10/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=pgweb_10:ADMINISTRASIDESA_AR_25K" alt="Legenda 1"></div>' +
+                '<div class="legend-item"><img src="http://localhost:8080/geoserver/pgweb_10/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=pgweb_10:ADMINISTRASIDESA_AR_25K" alt="Legenda 2"></div>' +
+                '</div>';
+
+            div.innerHTML =
+                '<h4>Desa</h4>' +
+                container; // Menampilkan kontainer dengan dua gambar
+
+            return div;
+        };
+
+        // Tambahkan legenda ke peta
+        legend.addTo(map);
+
+        // Menambahkan kontrol legenda ke peta
+        var legend2 = L.control({ position: "bottomleft" });
+
+        legend2.onAdd = function (map) {
+            var div = L.DomUtil.create("div", "legend2");
+
+            // Membuat kontainer untuk dua kolom
+            var container = '<div class="legend-container">' +
+                '<div class="legend-item"><img src="http://localhost:8080/geoserver/pgweb_10/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=pgweb_10:JALAN_LN_25K" alt="Legenda 1"></div>' +
+
+                '</div>';
+
+            div.innerHTML =
+                '<h4>Jalan</h4>' +
+                container; // Menampilkan kontainer dengan dua gambar
+
+            return div;
+        };
+
+        // Tambahkan legenda ke peta
+        legend2.addTo(map);
+
+        // Menambahkan kontrol legenda ke peta
+        var legend3 = L.control({ position: "bottomleft" });
+
+        legend3.onAdd = function (map) {
+            var div = L.DomUtil.create("div", "legend3");
+
+            // Membuat kontainer untuk dua kolom
+            var container = '<div class="legend-container">' +
+                '<div class="legend-item"><img src="http://localhost:8080/geoserver/pgweb_10/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&LAYER=pgweb_10:KESEHATAN_PT_25K" alt="Legenda 1"></div>' +
+
+                '</div>';
+
+            div.innerHTML =
+                '<h4>Fasilitas Kesehatan</h4>' +
+                container; // Menampilkan kontainer dengan dua gambar
+
+            return div;
+        };
+
+        // Tambahkan legenda ke peta
+        legend3.addTo(map);
+
+
+    </script>
+</body>
+
+</html>
